@@ -1,3 +1,36 @@
-[gd_scene format=3 uid="uid://bylmpdyb01fs2"]
+[gd_scene load_steps=6 format=3 uid="uid://bylmpdyb01fs2"]
 
-[node name="Main3D" type="Node3D"]
+[ext_resource type="Script" path="res://Main3d.cs" id="1_aofi8"]
+[ext_resource type="PackedScene" uid="uid://5qid8udnl7ju" path="res://Player.tscn" id="2_60m36"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ps174"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_xej4m"]
+size = Vector3(91, 0, 91)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_60gi7"]
+size = Vector3(91, 0, 91)
+
+[node name="Enviroment" type="Node3D"]
+script = ExtResource("1_aofi8")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+collision_mask = 0
+physics_material_override = SubResource("PhysicsMaterial_ps174")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_xej4m")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_60gi7")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.237953, -0.930518, -0.278416, 0.183013, -0.324469, 0.928023, -0.953879, 0.169872, 0.247505, 8, 9.99522, -7)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 32, 40)
+
+[node name="MainTimer" type="Timer" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("2_60m36")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1)
