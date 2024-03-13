@@ -1,3 +1,4 @@
+using System;
 using System.Reflection.Metadata;
 using System.Runtime.Serialization;
 using Godot;
@@ -7,11 +8,13 @@ public partial class Player : CharacterBody3D
     [Export]
     public int Speed {get; set;} = 20;
     [Export]
-    public int jump {get; set;} = 24;
+    public int jump {get; set;} = 8;
     
     private double mouse_sens = 0.3f;
     private double camara_angle = 0;
-    private int _gravity = 9;
+    private int _gravity = 18;
+
+    const float acceleration = 0.5f;
 
     public Node3D head;
     public Camera3D camara;
@@ -22,6 +25,8 @@ public partial class Player : CharacterBody3D
     {
         head = GetNode<Node3D>("Pivot");
         camara = GetNode<Camera3D>("Pivot/UIView");
+
+        Input.MouseMode = Input.MouseModeEnum.Captured;
     }
     public override void _Input(InputEvent @event)
     {
@@ -31,6 +36,9 @@ public partial class Player : CharacterBody3D
             head.RotateY(-mouseMotion.Relative.X * 0.01f);
             camara.RotateX(-mouseMotion.Relative.Y * 0.01f);
 
+            Vector3 camaraRot =  camara.Rotation;
+            camaraRot.Y =  Mathf.Clamp(camaraRot.Y, Mathf.DegToRad(-80f), Mathf.DegToRad(80f));
+            camara.Rotation = camaraRot;
         }
     }
 
@@ -38,34 +46,25 @@ public partial class Player : CharacterBody3D
     {
         //Movement inputs basic factoring pls redo this shit with a fkin switch later on
 
-        var direction = Vector3.Zero;
-
-        if (Input.IsActionPressed("move_up")) 
-        {
-            direction.Z -= 1.0f;
-        }
-        if (Input.IsActionPressed("move_back")) 
-        {
-            direction.Z += 1.0f;
-        }
-        if (Input.IsActionPressed("move_right")) 
-        {
-            direction.X += 1.0f;
-        }
-        if (Input.IsActionPressed("move_left")) 
-        {
-            direction.X -= 1.0f;
-        }
+        Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_up", "move_back");
+        Vector3 direction = (head.GlobalTransform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 
 
         if (direction != Vector3.Zero)
         {
-            direction = direction.Normalized();
+            _targetVelocity.X =  direction.X * Speed;
+            _targetVelocity.Z =  direction.Z * Speed;
             //GetNode<Node3D>("Pivot").Basis = Basis.LookingAt(direction);
+        } else 
+        {
+            _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0 , 1.2f);
+            _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0 , 1.2f);
         }
 
-        _targetVelocity.X =  direction.X * Speed;
-        _targetVelocity.Z =  direction.Z * Speed;
+        if (IsOnFloor() && Input.IsActionPressed("jump"))
+        {
+            _targetVelocity.Y += jump;
+        }
 
         if (!IsOnFloor())
         {
