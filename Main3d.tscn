@@ -27,9 +27,6 @@ shape = SubResource("BoxShape3D_60gi7")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.237953, -0.930518, -0.278416, 0.183013, -0.324469, 0.928023, -0.953879, 0.169872, 0.247505, 8, 9.99522, -7)
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 32, 40)
-
 [node name="MainTimer" type="Timer" parent="."]
 
 [node name="Player" parent="." instance=ExtResource("2_60m36")]
